@@ -1,0 +1,16 @@
+<table>
+    <tr>
+        <th>Apartment</th>
+        <th>Building Name</th>
+        <th>Unit Number</th>
+        <th>Visited At</th>
+    </tr>
+    <% @apartment_unit_visits.each do |apartment_unit_visit| %>
+    <tr>
+        <td><%= apartment_unit_visit.apartment.name %></td>
+        <td><%= apartment_unit_visit.building_name %></td>
+        <td><%= apartment_unit_visit.unit_number %></td>
+        <td><%= apartment_unit_visit.visited_at %></td>
+    </tr>
+    <% end %>
+</table>
