@@ -2,16 +2,22 @@
   "name": "ally-take-home-test",
   "private": true,
   "dependencies": {
+    "@headlessui/vue": "1.7.23",
+    "@heroicons/vue": "2.2.0",
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "5.4.4",
+    "@tailwindcss/typography": "0.5.16",
+    "tailwindcss": "^3.4.10",
     "turbolinks": "^5.2.0",
-    "webpack": "^4.46.0",
-    "webpack-cli": "^3.3.12"
+    "webpack": "^4.46.0"
   },
   "version": "0.1.0",
   "devDependencies": {
+    "@babel/plugin-transform-private-methods": "^7.27.1",
+    "@babel/plugin-transform-private-property-in-object": "^7.27.1",
+    "postcss": "^8.4.45",
     "webpack-dev-server": "^3"
   }
 }
