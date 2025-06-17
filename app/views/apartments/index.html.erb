@@ -1,0 +1,21 @@
+<h1>Apartments</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Apartment Name</th>
+      <th>Visit Count</th>
+      <th>Visited Units</th>
+      <th>Most Recent Visit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @apartments.each do |row| %>
+      <tr>
+        <td><%= row[:apartment_name] %></td>
+        <td><%= row[:visit_count] %></td>
+        <td><%= row[:visited_units].join(', ') %></td>
+        <td><%= row[:most_recent_visit].strftime("%B %d, %Y") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
