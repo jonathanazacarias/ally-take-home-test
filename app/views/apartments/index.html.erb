@@ -1,21 +1,23 @@
-<h1>Property Unit Visits</h1>
-<table>
-  <thead>
-    <tr>
-      <th>Apartment Name</th>
-      <th>Visit Count</th>
-      <th>Visited Units</th>
-      <th>Most Recent Visit</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @apartments.each do |row| %>
-      <tr>
-        <td><%= row[:apartment_name] %></td>
-        <td><%= row[:visit_count] %></td>
-        <td><%= row[:visited_units].join(', ') %></td>
-        <td><%= row[:most_recent_visit].strftime("%B %d, %Y") %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<h2 class="text-xl font-bold text-gray-800 mb-4 mt-12">Property Unit Visits</h2>
+<div class="overflow-hidden rounded-lg shadow-md">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-[#2463eb] text-white text-left">
+        <tr>
+        <th class="px-4 py-2">Apartment Name</th>
+        <th class="px-4 py-2">Visit Count</th>
+        <th class="px-4 py-2">Visited Units</th>
+        <th class="px-4 py-2">Most Recent Visit</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+        <% @apartments.each do |row| %>
+        <tr class="even:bg-gray-50 hover:bg-gray-100">
+            <td class="px-4 py-2 font-medium text-gray-800"><%= row[:apartment_name] %></td>
+            <td class="px-4 py-2"><%= row[:visit_count] %></td>
+            <td class="px-4 py-2"><%= row[:visited_units].join(', ') %></td>
+            <td class="px-4 py-2"><%= row[:most_recent_visit].strftime("%B %d, %Y") %></td>
+        </tr>
+        <% end %>
+    </tbody>
+    </table>
+</div>
