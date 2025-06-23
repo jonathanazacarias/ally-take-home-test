@@ -4,6 +4,10 @@ class ApartmentsController < ApplicationController
   def index
 
     # build a "table" that has a summary of the apartment visits for a particular apartment name
+
+    # right outer join to find properties w/ no visits, lef to find visits w/ no property
+
+    # .joins = worst case O(n*m), most likley will be O(n+mlog(m)), will be O(m) if n is indexed on id
     summary_rows = ApartmentUnitVisit
     .joins(:apartment)
     .select(
