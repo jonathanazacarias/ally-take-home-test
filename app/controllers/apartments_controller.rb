@@ -1,5 +1,5 @@
 # ApartmentsController
-# ---------------------
+# --------------------
 # The index action loads summarized apartment visit data:
 # - Fetches each apartment's total number of visits and most recent visit timestamp
 # - Gathers distinct unit names (building + unit number) visited per apartment
@@ -9,7 +9,7 @@
 class ApartmentsController < ApplicationController
   # This is for the index action/ view
   def index
-    @apartments = build_apartment_summaries
+    @apartments = apartment_summaries
     @apartments = @apartments.paginate page: params[:page], per_page: 20
   end
 
@@ -25,7 +25,7 @@ class ApartmentsController < ApplicationController
 
   private
 
-  def build_apartment_summaries
+  def apartment_summaries
     summary_rows = fetch_summary_rows
     unit_names_by_apartment = group_unit_names_by_apartment
 
@@ -42,7 +42,7 @@ class ApartmentsController < ApplicationController
 
   def fetch_summary_rows
     ApartmentUnitVisit
-      .joins(:apartment)
+      .joins(:apartment) # do join here to join the least amount of data
       .select(
         "apartments.id AS apartment_id",
         "apartments.name AS apartment_name",
