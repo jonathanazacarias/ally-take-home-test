@@ -7,8 +7,20 @@
 # All queries are optimized to reduce N+1 issues and minimize database round-trips for SQLite3.
 
 class ApartmentsController < ApplicationController
+  # This is for the index action/ view
   def index
     @apartments = build_apartment_summaries
+    @apartments = @apartments.paginate page: params[:page], per_page: 20
+  end
+
+  # This is for the visits action/ view by apartment id (property)
+  def visits
+    @apartment = Apartment.find(params[:id])
+
+    @unit_visits = ApartmentUnitVisit
+      .where(apartment_id: @apartment.id)
+      .order(visited_at: :desc)
+
   end
 
   private
@@ -19,6 +31,7 @@ class ApartmentsController < ApplicationController
 
     summary_rows.map do |row|
       {
+        apartment_id: row.apartment_id,
         apartment_name: row.apartment_name,
         visit_count: row.visit_count.to_i,
         visited_units: unit_names_by_apartment[row.apartment_id] || [],
@@ -41,7 +54,7 @@ class ApartmentsController < ApplicationController
 
   def group_unit_names_by_apartment
     visits = ApartmentUnitVisit
-      .select(:apartment_id, :building_name, :unit_number)
+      .select(:apartment_id, :building_name, :unit_number, :visited_at)
       .distinct
 
     formatted_units = visits.map do |visit|

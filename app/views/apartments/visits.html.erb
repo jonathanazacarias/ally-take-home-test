@@ -1,0 +1,22 @@
+<h2 class="text-xl font-bold text-gray-800 mb-4 mt-12">Apartment Unit Visits for <%= @apartment.name %></h2>
+
+<div class="overflow-hidden rounded-lg shadow-md">
+    <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-[#2463eb] text-white text-left">
+            <tr>
+                <th class="px-4 py-2">Building</th>
+                <th class="px-4 py-2">Unit</th>
+                <th class="px-4 py-2">Visited At</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            <% @unit_visits.each do |visit| %>
+            <tr class="even:bg-gray-50 hover:bg-gray-100">
+                <td class="px-4 py-2 font-medium text-gray-800"><%= visit.building_name.presence || "—" %></td>
+                <td class="px-4 py-2"><%= visit.unit_number.presence || "—" %></td>
+                <td class="px-4 py-2"><%= visit.visited_at.strftime('%b %d, %Y %l:%M %p') %></td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>
