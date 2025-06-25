@@ -1,50 +1,76 @@
+# ApartmentsController
+# ---------------------
+# The index action loads summarized apartment visit data:
+# - Fetches each apartment's total number of visits and most recent visit timestamp
+# - Gathers distinct unit names (building + unit number) visited per apartment
+# - Returns a sorted list of apartments by most recent visit, for reporting/display
+# All queries are optimized to reduce N+1 issues and minimize database round-trips for SQLite3.
+
 class ApartmentsController < ApplicationController
-
   def index
+    @apartments = build_apartment_summaries
+  end
 
-    summary_rows = ApartmentUnitVisit
-    .joins(:apartment)
-    .select(
-      "apartments.id AS apartment_id",
-      "apartments.name AS apartment_name",
-      "COUNT(*) AS visit_count",
-      "MAX(apartment_unit_visits.visited_at) AS most_recent_visit"
-    )
-    .group("apartments.id, apartments.name")
+  private
 
-    all_unique_unit_visits = ApartmentUnitVisit
-    .select(:apartment_id, :building_name, :unit_number)
-    .distinct
-    
-    unit_names_by_apartment = all_unique_unit_visits.map do |visit|
-      building = visit.building_name.presence
-      unit = visit.unit_number.presence
+  def build_apartment_summaries
+    summary_rows = fetch_summary_rows
+    unit_names_by_apartment = group_unit_names_by_apartment
 
-      unit_name = if building && unit
-                    "#{building} - #{unit}"
-                  elsif building
-                    building
-                  else
-                    unit || "" # default to empty string if both are nil
-                  end
-    
-      [visit.apartment_id, unit_name]
-    end
-    .group_by(&:first) # groups by apartment_id, returns a hash by apt id
-    .transform_values do |pairs|
-      pairs.map(&:last).uniq.sort_by(&:downcase)
-    end
-     
-    @apartments = summary_rows.map do |row|
+    summary_rows.map do |row|
       {
         apartment_name: row.apartment_name,
         visit_count: row.visit_count.to_i,
-        visited_units: unit_names_by_apartment[row.apartment_id] || [], 
-        most_recent_visit: row.most_recent_visit&.to_time
+        visited_units: unit_names_by_apartment[row.apartment_id] || [],
+        most_recent_visit: parse_timestamp(row.most_recent_visit)
       }
+    end.sort_by { |a| a[:most_recent_visit] || Time.at(0) }.reverse
+  end
+
+  def fetch_summary_rows
+    ApartmentUnitVisit
+      .joins(:apartment)
+      .select(
+        "apartments.id AS apartment_id",
+        "apartments.name AS apartment_name",
+        "COUNT(*) AS visit_count",
+        "MAX(apartment_unit_visits.visited_at) AS most_recent_visit"
+      )
+      .group("apartments.id, apartments.name")
+  end
+
+  def group_unit_names_by_apartment
+    visits = ApartmentUnitVisit
+      .select(:apartment_id, :building_name, :unit_number)
+      .distinct
+
+    formatted_units = visits.map do |visit|
+      apartment_id = visit.apartment_id
+      unit_name = format_unit_name(visit.building_name, visit.unit_number)
+      [apartment_id, unit_name]
     end
 
-    @apartments.sort_by! { |row| row[:most_recent_visit] || Time.at(0) }.reverse!
+    formatted_units
+      .group_by(&:first)
+      .transform_values do |pairs|
+        pairs.map(&:last).uniq.sort_by(&:downcase)
+      end
+  end
 
+  def format_unit_name(building, unit)
+    b = building.presence
+    u = unit.presence
+
+    if b && u
+      "#{b} - #{u}"
+    elsif b
+      b
+    else
+      u || ""
+    end
+  end
+
+  def parse_timestamp(ts)
+    ts&.to_time
   end
 end
