@@ -72,6 +72,9 @@ class ApartmentsController < ApplicationController
       .transform_values do |pairs|
         pairs.map(&:last).uniq.sort_by(&:downcase)
       end
+      # apt_id  unit_names
+      #  1  =>  [[1, East - 101], [1, Pool house], ...]
+      #  2  =>  [[2,North - 101], [2, Exercise room], ...]
   end
 
   def format_unit_name(building, unit)
