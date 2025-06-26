@@ -3,8 +3,11 @@
 # The index action loads summarized apartment visit data:
 # - Fetches each apartment's total number of visits and most recent visit timestamp
 # - Gathers distinct unit names (building + unit number) visited per apartment
-# - Returns a sorted list of apartments by most recent visit, for reporting/display
+# - Returns a sorted list of apartments by most recent visit
 # All queries are optimized to reduce N+1 issues and minimize database round-trips for SQLite3.
+# The visit action loads apartment unit visits by apartment to display on its own page.
+# Overall time complexity O(n log n)
+# Overall space complexity O(n)
 
 class ApartmentsController < ApplicationController
   # This is for the index action/ view
@@ -25,16 +28,17 @@ class ApartmentsController < ApplicationController
 
   private
 
+  # Get the data and assemble it
   def apartment_summaries
     summary_rows = fetch_summary_rows
-    unit_names_by_apartment = group_unit_names_by_apartment
+    distinct_units_by_apartment = group_unit_names_by_apartment
 
     summary_rows.map do |row|
       {
         apartment_id: row.apartment_id,
         apartment_name: row.apartment_name,
         visit_count: row.visit_count.to_i,
-        visited_units: unit_names_by_apartment[row.apartment_id] || [],
+        visited_units: distinct_units_by_apartment[row.apartment_id] || [],
         most_recent_visit: parse_timestamp(row.most_recent_visit)
       }
     end.sort_by { |a| a[:most_recent_visit] || Time.at(0) }.reverse
